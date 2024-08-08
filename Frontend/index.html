@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Car CRUD API</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #3e000c;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #ac8887;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+        font-size: 2rem;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        margin-bottom: 5px;
+        color: #555;
+        font-size: 1.2rem;
+      }
+      .form-group input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      .form-group button {
+        padding: 10px;
+        background-color: #5cb85c;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 1.2rem;
+        transition: background-color 0.3s;
+      }
+      .form-group button:hover {
+        background-color: #4cae4c;
+      }
+      .car-list {
+        margin-top: 20px;
+      }
+      .car-list li {
+        background: #f9f9f9;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        font-size: 1.2rem;
+        transition: background-color 0.3s, transform 0.3s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .car-list li:hover {
+        background-color: #eee;
+        transform: scale(1.02);
+      }
+      .car-list span {
+        display: block;
+        color: #333;
+      }
+      .btn-popular {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #0275d8;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        margin-top: 20px;
+        font-size: 1.2rem;
+        transition: background-color 0.3s;
+      }
+      .btn-popular:hover {
+        background-color: #025aa5;
+      }
+      .popular-make {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 1.5rem;
+        color: #555;
+      }
+      .edit-buttons {
+        display: flex;
+        gap: 10px;
+      }
+      .edit-buttons button {
+        padding: 5px 10px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .edit-buttons .edit-btn {
+        background-color: #5bc0de;
+        color: white;
+      }
+      .edit-buttons .edit-btn:hover {
+        background-color: #31b0d5;
+      }
+      .edit-buttons .delete-btn {
+        background-color: #d9534f;
+        color: white;
+      }
+      .edit-buttons .delete-btn:hover {
+        background-color: #c9302c;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" x-data="carApp" x-init="init">
+      <h1>Car CRUD API</h1>
+
+      <!-- Form to Add/Edit a Car -->
+      <form @submit.prevent="isEditing ? updateCar() : addCar()">
+        <div class="form-group">
+          <label for="color">Color</label>
+          <input
+            id="color"
+            type="text"
+            x-model="newCar.color"
+            placeholder="Color"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="make">Make</label>
+          <input
+            id="make"
+            type="text"
+            x-model="newCar.make"
+            placeholder="Make"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="model">Model</label>
+          <input
+            id="model"
+            type="text"
+            x-model="newCar.model"
+            placeholder="Model"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="reg_number">Reg Number</label>
+          <input
+            id="reg_number"
+            type="text"
+            x-model="newCar.reg_number"
+            placeholder="Reg Number"
+            required />
+        </div>
+        <div class="form-group">
+          <button
+            type="submit"
+            x-text="isEditing ? 'Update Car' : 'Add Car'"></button>
+        </div>
+      </form>
+
+      <!-- List of Cars -->
+      <h2>Cars List</h2>
+      <ul class="car-list">
+        <template x-for="car in cars" :key="car.reg_number">
+          <li>
+            <span
+              x-text="`${car.color} ${car.make} ${car.model} (${car.reg_number})`"></span>
+            <div class="edit-buttons">
+              <button class="edit-btn" @click="editCar(car)">Edit</button>
+              <button class="delete-btn" @click="deleteCar(car.reg_number)">
+                Delete
+              </button>
+            </div>
+          </li>
+        </template>
+      </ul>
+
+      <!-- Button to Get Most Popular Car Make -->
+      <h2>Most Popular Car Make</h2>
+      <button class="btn-popular" @click="getMostPopularMake()">
+        Get Most Popular Car Make
+      </button>
+      <p class="popular-make" x-text="mostPopularMake"></p>
+    </div>
+
+    <script>
+      function carApp() {
+        return {
+          cars: [],
+          newCar: { color: "", make: "", model: "", reg_number: "" },
+          isEditing: false,
+          mostPopularMake: "",
+          init() {
+            this.fetchCars();
+          },
+          async fetchCars() {
+            try {
+              const response = await axios.get(
+                "http://localhost:3000/api/cars"
+              );
+              this.cars = response.data;
+            } catch (error) {
+              console.error("Error fetching cars:", error);
+            }
+          },
+          async addCar() {
+            try {
+              const response = await axios.post(
+                "http://localhost:3000/api/cars",
+                this.newCar
+              );
+              this.cars.push(response.data);
+              this.resetForm();
+            } catch (error) {
+              console.error("Error adding car:", error);
+            }
+          },
+          editCar(car) {
+            this.newCar = { ...car };
+            this.isEditing = true;
+          },
+          async updateCar() {
+            try {
+              const response = await axios.put(
+                `http://localhost:3000/api/cars/${this.newCar.reg_number}`,
+                this.newCar
+              );
+              const index = this.cars.findIndex(
+                (car) => car.reg_number === this.newCar.reg_number
+              );
+              this.cars.splice(index, 1, response.data);
+              this.resetForm();
+              this.isEditing = false;
+            } catch (error) {
+              console.error("Error updating car:", error);
+            }
+          },
+          async deleteCar(reg_number) {
+            try {
+              await axios.delete(
+                `http://localhost:3000/api/cars/${reg_number}`
+              );
+              this.cars = this.cars.filter(
+                (car) => car.reg_number !== reg_number
+              );
+            } catch (error) {
+              console.error("Error deleting car:", error);
+            }
+          },
+          async getMostPopularMake() {
+            try {
+              const response = await axios.get(
+                "http://localhost:3000/api/mostPopularCar"
+              );
+              this.mostPopularMake = response.data.make;
+            } catch (error) {
+              console.error("Error getting most popular car make:", error);
+            }
+          },
+          resetForm() {
+            this.newCar = { color: "", make: "", model: "", reg_number: "" };
+          },
+        };
+      }
+    </script>
+  </body>
+</html>

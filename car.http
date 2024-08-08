@@ -1,0 +1,16 @@
+### Create a New Car port
+POST http://localhost:3000/api/cars
+Content-Type: application/json
+
+{
+   "make": "Ford",
+  "model": "Fiesta",
+  "color": "orange",
+  "reg_number": "CL 77790"
+}
+
+### Get All Cars , I guess I am calling?
+GET http://localhost:3000/api/cars
+
+### Get Most Popular Car Make, I am also calling here?
+GET http://localhost:3000/api/mostPopularCar

@@ -1,0 +1,8 @@
+#Car Crude API Apliication
+
+-What is expected from us here is to create an application, it should have a backend; with Node.js and Express (this enables us to manage the car data), it should also have frontend; with Alpine.js and axios, these need to interact with the backend.
+
+##Setup Instructions
+-In the projects folder create a folder with the name 'car_crude_API'.
+-Once that is done install all the dependencies.
+-Create the various files in the folders,
