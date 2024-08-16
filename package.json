@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "CRUD API for car data",
   "main": "index.js",
+  
   "scripts": {
     "dev": "nodemon index.js",
-    "test": "mocha test/**/*.js",
+    "test": "mocha test/api.test.js",
     "start": "node index.js"
   },
   "dependencies": {
@@ -14,7 +15,10 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/register": "^7.24.6",
     "chai": "^4.5.0",
-    "mocha": "^8.4.0"
+    "mocha": "^10.7.3"
   }
 }

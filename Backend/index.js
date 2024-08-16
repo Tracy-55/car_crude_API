@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+
 const app = express();
 const port = 3000;
 
@@ -23,16 +24,23 @@ async function fetchCarData() {
 fetchCarData();
 
 // Define routes
-app.get('/api/cars', (req, res) => {
+app.get('/api/cars', (_req, res) => {
     res.send(cars);
 });
 
-app.get('/api/mostPopularCar', (req, res) => {
+app.get('/api/mostPopularMake', (_req, res) => {
     const makes = cars.reduce((acc, car) => {
-        acc[car.make] = (acc[car.make] || 0) + 1;
+        const make = car.make.toLowerCase();
+        acc[make] = (acc[make] || 0) + 1;
         return acc;
     }, {});
-    const mostPopularMake = Object.keys(makes).reduce((a, b) => makes[a] > makes[b] ? a : b);
+
+    // Find the most popular make, with tie-breaking logic
+    const sortedMakes = Object.entries(makes)
+        .sort(([, aCount], [, bCount]) => bCount - aCount || a.localeCompare(b))
+        .map(([make]) => make);
+
+    const mostPopularMake = sortedMakes[0];
     res.send({ make: mostPopularMake });
 });
 
@@ -46,8 +54,30 @@ app.post('/api/cars', (req, res) => {
     res.status(201).send(newCar);
 });
 
-
 // Start the server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
+
+// Export the `mostPopularMake` function for testing
+
+function mostPopularMake(cars) {
+    if (cars.length === 0) return undefined;
+
+    const makes = cars.reduce((acc, car) => {
+        const make = car.make.toLowerCase();
+        acc[make] = (acc[make] || 0) + 1;
+        return acc;
+    }, {});
+
+    // Convert makes object to an array and sort it
+    const sortedMakes = Object.entries(makes)
+        .sort(([, aCount], [, bCount]) => bCount - aCount) // Sort by count descending
+        .map(([make]) => make);
+
+    return sortedMakes[0]; // Return the most popular make
+}
+
+module.exports = {
+    mostPopularMake
+};
