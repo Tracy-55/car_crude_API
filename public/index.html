@@ -189,25 +189,20 @@
 
           // Function to fetch all cars from backend
           async fetchCars() {
-            const response = await axios.get("http://localhost:3000/api/cars");
+            const response = await axios.get("/api/cars");
             this.cars = response.data;
           },
 
           // Function to add a new car
           async addCar() {
-            const response = await axios.post(
-              "http://localhost:3000/api/cars",
-              this.newCar
-            );
+            const response = await axios.post("/api/cars", this.newCar);
             this.cars.push(response.data);
             this.newCar = { color: "", make: "", model: "", reg_number: "" };
           },
 
           // Function to get the most popular car make
           async getMostPopularMake() {
-            const response = await axios.get(
-              "http://localhost:3000/api/mostPopularCar"
-            );
+            const response = await axios.get("/api/mostPopularCar");
             this.mostPopularMake = `Most Popular Make: ${response.data.make}`;
           },
 

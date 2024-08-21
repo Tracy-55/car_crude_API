@@ -2,7 +2,7 @@
 
 const chai = require('chai');
 const expect = chai.expect;
-const { mostPopularMake } = require('../Backend/index.js'); // Adjust path as needed
+const { mostPopularMake } = require('../index.js'); // Adjust path as needed
 
 describe('mostPopularMake', () => {
     it('should return the most popular car make', () => {
